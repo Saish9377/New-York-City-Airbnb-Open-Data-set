@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 import warnings
+import os
 
 # Suppress warnings
 warnings.filterwarnings("ignore")
@@ -16,7 +17,10 @@ plt.rcParams['figure.figsize'] = (10, 6)
 # 📥 Load and clean dataset
 @st.cache_data
 def load_data():
-    df = pd.read_csv(r'C:\Users\saish\Downloads\Project\Data_Analytics\DA1\AB_NYC_2019.CSV')
+    # Load from same directory as script
+    csv_path = os.path.join(os.path.dirname(__file__), 'AB_NYC_2019.csv')
+    df = pd.read_csv(csv_path)
+
     df['name'].fillna('Unknown', inplace=True)
     df['host_name'].fillna('Unknown', inplace=True)
     df['last_review'].fillna(pd.to_datetime('2000-01-01'), inplace=True)
@@ -32,7 +36,7 @@ def load_data():
         lower_bound = Q1 - 1.5 * IQR
         upper_bound = Q3 + 1.5 * IQR
         return df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
-    
+
     df = remove_outliers_iqr(df, 'price')
     df = remove_outliers_iqr(df, 'minimum_nights')
 
@@ -119,7 +123,7 @@ elif menu == "Custom Questions":
         st.write("Property with maximum reviews:")
         st.write(property_info[['name', 'host_name', 'neighbourhood_group', 'number_of_reviews']])
 
-# --- Analysis Questions (from menu-based input) ---
+# --- Analysis Questions ---
 elif menu == "Analysis Questions":
     st.title("📌 Choose an Analysis Question")
 
